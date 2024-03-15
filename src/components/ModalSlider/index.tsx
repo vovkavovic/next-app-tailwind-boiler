@@ -30,6 +30,7 @@ export default function ModalSlider() {
       ? {
           y: "0%",
           rotate: "0deg",
+          opacity: 1,
         }
       : {
           y: "125%",
@@ -60,7 +61,7 @@ export default function ModalSlider() {
         ? [
             [
               "#modal-bg-overlay",
-              { y: "0%", rotate: 0, scale: 1.25 },
+              { y: ["125%", "0%"], rotate: 0, scale: 1.25 },
               { ease: easings.easeInOutQuint, duration: 1.2, delay: 1.2 },
             ],
             [
@@ -133,6 +134,7 @@ export default function ModalSlider() {
     animate([...animations] as AnimationSequence);
   }, [viewParam]);
 
+  /*  STILL NEDD TO HANDLE INITIAL VISBILITY OF #modal-bg-overlay BASED ON PARAM   */
   return (
     <div
       ref={scope}
