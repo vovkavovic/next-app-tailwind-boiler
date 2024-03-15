@@ -79,6 +79,7 @@ export default function ModalSlider() {
                 at: "-1.2",
               },
             ],
+            // show on start
             [
               "#main-slider-container",
               {
@@ -86,6 +87,7 @@ export default function ModalSlider() {
               },
               { duration: 0.01, delay: 1.4, at: "-2.4" },
             ],
+            // hide on complete
             [
               "#main-slider-container",
               {
@@ -111,6 +113,7 @@ export default function ModalSlider() {
               },
               { ease: easings.easeInOutQuint, duration: 1.2, at: "-1.2" },
             ],
+            // show on start
             [
               "#main-slider-container",
               {
@@ -118,6 +121,7 @@ export default function ModalSlider() {
               },
               { duration: 0.01, delay: 0, at: "-2.4" },
             ],
+            // hide on complete
             [
               "#main-slider-container",
               {
