@@ -25,28 +25,24 @@ export const useViewParamContext = () => {
   return context;
 };
 
+/* const getViewParam = (url: string) => {
+  const urlSearchParams = new URLSearchParams(url.split("?")?.[1]);
+  const currentView =
+    (urlSearchParams.get("view") as WorksListingViewType) || "slider";
+  return currentView;
+};
+const viewParam = getViewParam(router.asPath); */
+
 export const ViewParamProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
-  const [viewParam, setViewParamState] =
-    useState<WorksListingViewType>("slider");
-
-  useEffect(() => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const currentView = urlSearchParams.get("view") as WorksListingViewType;
-
-    if (currentView && (currentView === "slider" || currentView === "list")) {
-      setViewParamState(currentView);
-    } else {
-      urlSearchParams.set("view", "slider");
-      router.push(
-        `${router.pathname}?${urlSearchParams.toString()}`,
-        undefined,
-        { shallow: true },
-      );
-    }
-  }, [router]);
+  const [viewParam, setViewParamState] = useState<WorksListingViewType>(() => {
+    const urlSearchParams = new URLSearchParams(router.asPath.split("?")?.[1]);
+    const currentView =
+      (urlSearchParams.get("view") as WorksListingViewType) || "slider";
+    return currentView;
+  });
 
   const setViewParam = (newValue: WorksListingViewType) => {
     const urlSearchParams = new URLSearchParams(window.location.search);
