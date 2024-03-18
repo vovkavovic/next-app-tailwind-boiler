@@ -34,10 +34,6 @@ export default function Card({
     }
   }, [x, y, width, height, top, right, bottom, left, isFirst]);
 
-  useEffect(() => {
-    window.console.log("listMeasure", listMeasure);
-  }, [listMeasure]);
-
   return (
     <div className={className}>
       <div className="aspect-[294/165] w-full mb-[12px] relative z-10 rounded-[16px] overflow-hidden">
