@@ -1,6 +1,6 @@
 import { useViewMeasureContext } from "@/providers/ViewMeasuresProvider";
-import { CSSProperties, useEffect, useRef } from "react";
-import { usePrevious } from "react-use";
+import { CSSProperties, useEffect, useLayoutEffect, useRef } from "react";
+import { usePrevious, useUpdateEffect } from "react-use";
 import useMeasure from "@/hooks/useMeasure";
 import { AnimationSequence, motion, useAnimate } from "framer-motion";
 import { useViewParamContext } from "@/providers/ViewParamProvider";
@@ -28,13 +28,15 @@ export default function ModalSlider() {
   initialModalBgOverlayStyles.current =
     viewParam === "slider"
       ? {
-          y: "0%",
+          transform: "translateY(0%)",
           rotate: "0deg",
           opacity: 1,
+          scale: 1.25,
         }
       : {
-          y: "125%",
+          transform: "translateY(125%)",
           rotate: "-5deg",
+          opacity: 1,
           scale: 1.25,
         };
 
@@ -46,24 +48,20 @@ export default function ModalSlider() {
           left: sliderMeasure.left,
           width: sliderMeasure.width,
           height: sliderMeasure.height,
+          opacity: 0,
         }
       : {
           top: listMeasure.top,
           left: listMeasure.left,
           width: listMeasure.width,
           height: listMeasure.height,
-          // opacity: 0,
+          opacity: 0,
         };
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     const animations =
       viewParam === "slider"
         ? [
-            [
-              "#modal-bg-overlay",
-              { y: ["125%", "0%"], rotate: 0, scale: 1.25 },
-              { ease: easings.easeInOutQuint, duration: 1.2, delay: 1.2 },
-            ],
             [
               "#main-slider-container",
               {
@@ -76,17 +74,16 @@ export default function ModalSlider() {
               {
                 ease: easings.easeInOutQuint,
                 duration: 1.2,
-                delay: 0.013,
-                at: "-1.2",
+                delay: 1.2,
               },
             ],
-            /* // show on start
+            // show on start
             [
               "#main-slider-container",
               {
                 opacity: 1,
               },
-              { duration: 0.01, delay: 1.4, at: "-2.4" },
+              { duration: 0.01, delay: 0, at: "-1.2" },
             ],
             // hide on complete
             [
@@ -94,15 +91,10 @@ export default function ModalSlider() {
               {
                 opacity: 0,
               },
-              { duration: 0.01, delay: 1.2, at: "2.4" },
-            ], */
+              { duration: 0.01, delay: 2.4, at: "1.2" },
+            ],
           ]
         : [
-            [
-              "#modal-bg-overlay",
-              { y: ["0%", "125%"], rotate: -5, scale: 1.25 },
-              { ease: easings.easeInOutQuint, duration: 1.2 },
-            ],
             [
               "#main-slider-container",
               {
@@ -112,15 +104,15 @@ export default function ModalSlider() {
                 width: [sliderMeasure.width, listMeasure.width],
                 height: [sliderMeasure.height, listMeasure.height],
               },
-              { ease: easings.easeInOutQuint, duration: 1.2, at: "-1.2" },
+              { ease: easings.easeInOutQuint, duration: 1.2 },
             ],
-            /* // show on start
+            // show on start
             [
               "#main-slider-container",
               {
                 opacity: 1,
               },
-              { duration: 0.01, delay: 0, at: "-2.4" },
+              { duration: 0.01, delay: 0, at: "-1.2" },
             ],
             // hide on complete
             [
@@ -128,13 +120,47 @@ export default function ModalSlider() {
               {
                 opacity: 0,
               },
-              { duration: 0.01, delay: 1.2, at: "2.4" },
-            ], */
+              { duration: 0.01, delay: 1.2, at: "1.2" },
+            ],
           ];
     animate([...animations] as AnimationSequence);
   }, [viewParam]);
 
+  /*  Check when scroll is 0 and all cards are masked A->B*/
+  /*  Check main view is masked B->A*/
+
   /*  STILL NEDD TO HANDLE INITIAL VISBILITY OF #modal-bg-overlay BASED ON PARAM   */
+
+  const mainSliderContainerVariants = {
+    slider: {
+      top: sliderMeasure.top,
+      left: sliderMeasure.left,
+      width: sliderMeasure.width,
+      height: sliderMeasure.height,
+      opacity: 0,
+    },
+    list: {
+      top: listMeasure.top,
+      left: listMeasure.left,
+      width: listMeasure.width,
+      height: listMeasure.height,
+      opacity: 0,
+    },
+  };
+
+  const bgOverlayVariants = {
+    slider: {
+      y: "0%",
+      rotate: "0deg",
+      scale: 1,
+    },
+    list: {
+      y: "125%",
+      rotate: "-5deg",
+      scale: 1.25,
+    },
+  };
+
   return (
     <div
       ref={scope}
@@ -142,17 +168,36 @@ export default function ModalSlider() {
     >
       <div
         ref={sliderStateRef}
-        className="bg-green-500/50 z-20 aspect-[1152/648] h-[calc(100%-216px)] w-[74%] rounded-[16px]"
+        className="z-20 aspect-[1152/648] h-[calc(100%-216px)] w-[74%] rounded-[16px]"
       />
 
-      <motion.div
-        id="main-slider-container"
-        className="bg-orange-500 absolute rounded-[16px] z-20"
-        style={initialContainerStyles.current}
-      />
+      {listMeasure.top !== 0 || sliderMeasure.top !== 0 ? (
+        <motion.div
+          initial={
+            viewParam === "slider"
+              ? mainSliderContainerVariants.slider
+              : mainSliderContainerVariants.list
+          }
+          id="main-slider-container"
+          className="bg-blue-500 absolute rounded-[16px] z-20"
+          style={initialContainerStyles.current}
+        />
+      ) : null}
 
       <motion.div
+        initial={
+          viewParam === "slider"
+            ? bgOverlayVariants.slider
+            : bgOverlayVariants.list
+        }
         id="modal-bg-overlay"
+        variants={bgOverlayVariants}
+        animate={viewParam}
+        transition={{
+          duration: 1.2,
+          delay: viewParam === "list" ? 0 : 1.2,
+          ease: easings.easeInOutQuint,
+        }}
         className="absolute inset-0 w-full h-full bg-blue-800 z-10"
         style={initialModalBgOverlayStyles.current}
       />
