@@ -80,7 +80,7 @@ export default function ModalSlider() {
                 at: "-1.2",
               },
             ],
-            // show on start
+            /* // show on start
             [
               "#main-slider-container",
               {
@@ -95,12 +95,12 @@ export default function ModalSlider() {
                 opacity: 0,
               },
               { duration: 0.01, delay: 1.2, at: "2.4" },
-            ],
+            ], */
           ]
         : [
             [
               "#modal-bg-overlay",
-              { y: "125%", rotate: -5, scale: 1.25 },
+              { y: ["0%", "125%"], rotate: -5, scale: 1.25 },
               { ease: easings.easeInOutQuint, duration: 1.2 },
             ],
             [
@@ -114,7 +114,7 @@ export default function ModalSlider() {
               },
               { ease: easings.easeInOutQuint, duration: 1.2, at: "-1.2" },
             ],
-            // show on start
+            /* // show on start
             [
               "#main-slider-container",
               {
@@ -129,7 +129,7 @@ export default function ModalSlider() {
                 opacity: 0,
               },
               { duration: 0.01, delay: 1.2, at: "2.4" },
-            ],
+            ], */
           ];
     animate([...animations] as AnimationSequence);
   }, [viewParam]);
