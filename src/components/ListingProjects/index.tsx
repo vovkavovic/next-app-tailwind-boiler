@@ -45,6 +45,8 @@ export default function ListingProjects({
         title={item.title}
         image={item.cover.image}
         className="col-span-1"
+        index={index}
+        length={filteredProjects.length}
         isFirst={
           (category === categories?.[1] &&
             selectedCategory === "all" &&

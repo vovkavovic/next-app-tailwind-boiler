@@ -16,6 +16,16 @@ const store = (set: SetStateAction<any>) => {
         "SCROLL/SET_INSTANCE",
       );
     },
+    mainLenisStopped: false,
+    setMainLenisStopped: (bool: boolean) => {
+      return set(
+        () => {
+          return { mainLenisStopped: bool };
+        },
+        false,
+        "WORKS_VIEW/SET_MAIN_LENIS_STOPPED",
+      );
+    },
   };
 };
 

@@ -1,10 +1,11 @@
 import { useViewMeasureContext } from "@/providers/ViewMeasuresProvider";
-import { CSSProperties, useEffect, useLayoutEffect, useRef } from "react";
-import { usePrevious, useUpdateEffect } from "react-use";
+import { CSSProperties, LegacyRef, useEffect, useRef } from "react";
+import { useUpdateEffect } from "react-use";
 import useMeasure from "@/hooks/useMeasure";
 import { AnimationSequence, motion, useAnimate } from "framer-motion";
 import { useViewParamContext } from "@/providers/ViewParamProvider";
 import { easings } from "@/constants/easings";
+import useLenisScrollStore from "@/store/LenisStore";
 
 export default function ModalSlider() {
   const initialContainerStyles = useRef<CSSProperties>({});
@@ -13,7 +14,6 @@ export default function ModalSlider() {
   const { updateSliderMeasure, listMeasure, sliderMeasure } =
     useViewMeasureContext();
   const { viewParam } = useViewParamContext();
-  const previousViewParam = usePrevious(viewParam);
 
   const [sliderStateRef, { x, y, width, height, top, right, bottom, left }] =
     useMeasure();
@@ -23,6 +23,10 @@ export default function ModalSlider() {
   }, [x, y, width, height, top, right, bottom, left]);
 
   const [scope, animate] = useAnimate();
+
+  const mainLenisStopped = useLenisScrollStore(
+    (state) => state.mainLenisStopped,
+  );
 
   // Set initial modal bg overlay styles
   initialModalBgOverlayStyles.current =
@@ -74,7 +78,7 @@ export default function ModalSlider() {
               {
                 ease: easings.easeInOutQuint,
                 duration: 1.2,
-                delay: 1.2,
+                delay: 1.4,
               },
             ],
             // show on start
@@ -104,7 +108,7 @@ export default function ModalSlider() {
                 width: [sliderMeasure.width, listMeasure.width],
                 height: [sliderMeasure.height, listMeasure.height],
               },
-              { ease: easings.easeInOutQuint, duration: 1.2 },
+              { ease: easings.easeInOutQuint, duration: 1.0 },
             ],
             // show on start
             [
@@ -120,16 +124,11 @@ export default function ModalSlider() {
               {
                 opacity: 0,
               },
-              { duration: 0.01, delay: 1.2, at: "1.2" },
+              { duration: 0.01, delay: 1.4, at: "1.2" },
             ],
           ];
     animate([...animations] as AnimationSequence);
   }, [viewParam]);
-
-  /*  Check when scroll is 0 and all cards are masked A->B*/
-  /*  Check main view is masked B->A*/
-
-  /*  STILL NEDD TO HANDLE INITIAL VISBILITY OF #modal-bg-overlay BASED ON PARAM   */
 
   const mainSliderContainerVariants = {
     slider: {
@@ -167,11 +166,11 @@ export default function ModalSlider() {
       className="fixed inset-0 w-full h-full z-40 flex items-center justify-center"
     >
       <div
-        ref={sliderStateRef}
+        ref={sliderStateRef as LegacyRef<HTMLDivElement>}
         className="z-20 aspect-[1152/648] h-[calc(100%-216px)] w-[74%] rounded-[16px]"
       />
 
-      {listMeasure.top !== 0 || sliderMeasure.top !== 0 ? (
+      {listMeasure.top !== 0 || sliderMeasure.top !== 0 || mainLenisStopped ? (
         <motion.div
           initial={
             viewParam === "slider"
