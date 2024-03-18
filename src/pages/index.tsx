@@ -4,6 +4,7 @@ import { useViewParamContext } from "@/providers/ViewParamProvider";
 
 export default function Home() {
   const { viewParam, setViewParam } = useViewParamContext();
+
   return (
     <main className="flex min-h-screen flex-col items-start justify-start py-[120px] px-[8.125vw] bg-white text-black">
       <div className="grid grid-cols-4 gap-16">
@@ -19,7 +20,7 @@ export default function Home() {
               : setViewParam("slider");
           }}
         >
-          {viewParam}
+          toggle me
         </button>
       </div>
     </main>
